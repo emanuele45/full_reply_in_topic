@@ -63,8 +63,30 @@
 	}
 ]]></add>
 		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		if (!empty($context['new_replies']))
+			$context['new_replies']--;
+	}]]></search>
+			<add><![CDATA[
+	if(isset($_GET['is_quick_reply_full']))
+		$context['previous_posts'] = array_reverse($context['previous_posts']);
+]]></add>
+		</operation>
 	</file>
 	<file name="$themedir/Display.template.php">
+		<operation>
+			<search position="replace"><![CDATA[
+	echo '
+				</form>
+]]></search>
+			<add><![CDATA[
+	echo '
+				<span id="new_replies"></span>
+				</form>
+]]></add>
+		</operation>
+
 		<operation>
 			<search position="after"><![CDATA[
 	// Show the anchor for the top and for the first message. If the first message is new, say so.
@@ -710,7 +732,7 @@
 						if (checkboxFields[i] in document.forms.postmodify && document.forms.postmodify.elements[checkboxFields[i]].checked)
 							x[x.length] = checkboxFields[i] + \'=\' + document.forms.postmodify.elements[checkboxFields[i]].value;
 
-					sendXMLDocument(smf_prepareScriptUrl(smf_scripturl) + \'action=post2\' + (current_board ? \';board=\' + current_board : \'\') + (make_poll ? \';poll\' : \'\') + \';preview;xml\', x.join(\'&\'), onDocSent);
+					sendXMLDocument(smf_prepareScriptUrl(smf_scripturl) + \'action=post2\' + (current_board ? \';board=\' + current_board : \'\') + (make_poll ? \';poll\' : \'\') + \';preview;xml;is_quick_reply_full\', x.join(\'&\'), onDocSent);
 
 					document.getElementById(\'preview_section\').style.display = \'\';
 					setInnerHTML(document.getElementById(\'preview_subject\'), txt_preview_title);
@@ -785,7 +807,7 @@
 				var numNewPosts = newPosts.length;
 				if (numNewPosts != 0)
 				{
-					var newPostsHTML = \'<span id="new_replies"><\' + \'/span>\';
+					var newPostsHTML = \'\';
 					for (var i = 0; i < numNewPosts; i++)
 					{
 						new_replies[new_replies.length] = newPosts[i].getAttribute("id");
@@ -794,11 +816,11 @@
 						if (newPosts[i].getElementsByTagName("is_ignored")[0].firstChild.nodeValue != 0)
 							ignored_replies[ignored_replies.length] = ignoring = newPosts[i].getAttribute("id");
 
-						newPostsHTML += \'<div class="windowbg\' + (++reply_counter % 2 == 0 ? \'2\' : \'\') + \' core_posts"><span class="topslice"><span></span></span><div class="content" id="msg\' + newPosts[i].getAttribute("id") + \'"><div class="floatleft"><h5>', $txt['posted_by'], ': \' + newPosts[i].getElementsByTagName("poster")[0].firstChild.nodeValue + \'</h5><span class="smalltext">&#171;&nbsp;<strong>', $txt['on'], ':</strong> \' + newPosts[i].getElementsByTagName("time")[0].firstChild.nodeValue + \'&nbsp;&#187;</span> <img src="\' + smf_images_url + \'/', $context['user']['language'], '/new.gif" alt="', $txt['preview_new'], '" id="image_new_\' + newPosts[i].getAttribute("id") + \'" /></div>\';';
+						newPostsHTML += \'<div class="windowbg\' + (++reply_counter % 2 == 0 ? ', $alternate ? '\'\' : \'2\'' : '\'2\' : \'\'', ') + \' core_posts"><span class="topslice"><span></span></span><div class="content" id="msg\' + newPosts[i].getAttribute("id") + \'"><div class="floatleft"><h5>', $txt['posted_by'], ': \' + newPosts[i].getElementsByTagName("poster")[0].firstChild.nodeValue + \'</h5><span class="smalltext">&#171;&nbsp;<strong>', $txt['on'], ':</strong> \' + newPosts[i].getElementsByTagName("time")[0].firstChild.nodeValue + \'&nbsp;&#187;</span> <img src="\' + smf_images_url + \'/', $context['user']['language'], '/new.gif" alt="', $txt['preview_new'], '" id="image_new_\' + newPosts[i].getAttribute("id") + \'" /></div>\';';
 
 	if ($context['can_quote'])
 		echo '
-						newPostsHTML += \'<ul class="reset smalltext quickbuttons" id="msg_\' + newPosts[i].getAttribute("id") + \'_quote"><li class="quote_button"><a href="#postmodify" onclick="return insertQuoteFast(\\\'\' + newPosts[i].getAttribute("id") + \'\\\');"><span>',$txt['bbc_quote'],'</span><\' + \'/a></li></ul>\';';
+						newPostsHTML += \'<ul class="reset smalltext quickbuttons" id="msg_\' + newPosts[i].getAttribute("id") + \'_quote"><li class="quote_button"><a href="#postmodify" onclick="return oQuickReply.quote(\\\'\' + newPosts[i].getAttribute("id") + \'\\\');"><span>',$txt['quote'],'</span><\' + \'/a></li></ul>\';';
 
 	echo '
 						newPostsHTML += \'<br class="clear" />\';
@@ -808,6 +830,7 @@
 
 						newPostsHTML += \'<div class="list_posts smalltext" id="msg_\' + newPosts[i].getAttribute("id") + \'_body">\' + newPosts[i].getElementsByTagName("message")[0].firstChild.nodeValue + \'<\' + \'/div></div><span class="botslice"><span></span></span></div>\';
 					}
+					newPostsHTML += \'<span id="new_replies"><\' + \'/span>\';
 					setOuterHTML(document.getElementById(\'new_replies\'), newPostsHTML);
 				}
 
