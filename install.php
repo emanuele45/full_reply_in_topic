@@ -7,7 +7,6 @@ elseif (!defined('SMF')) // If we are outside SMF and can't find SSI.php, then t
 
 $integration_function = !empty($context['uninstalling']) ? 'remove_integration_function' : 'add_integration_function';
 
-$integration_function('integrate_load_theme ', '$themedir/FullReplyDisplay.template.php');
+$integration_function('integrate_theme_include', '$themedir/FullReplyDisplay.template.php');
 
 ?>
-
