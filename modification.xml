@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
 	<id>emanuele:full_reply_in_topic</id>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 
 	<file name="$sourcedir/Display.php">
 		<operation>
@@ -14,6 +14,24 @@
 	$context['is_quick_reply_full'] = true;
 	require_once($sourcedir.'/Post.php');
 	Post();
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+		$ascending = !$ascending;
+		$limit = $context['total_visible_posts'] <= $start + $limit ? $context['total_visible_posts'] - $start : $limit;
+		$start = $context['total_visible_posts'] <= $start + $limit ? 0 : $context['total_visible_posts'] - $start - $limit;
+]]></search>
+			<add><![CDATA[
+		if (!empty($context['remember_new_replies']))
+		{
+			$limit = isset($context['remember_new_replies']) && $context['remember_new_replies'] > $limit ? $context['remember_new_replies'] : $limit;
+			$start = $topicinfo['num_replies'] - $limit + 1;
+		} else {
+			$ascending = !$ascending;
+			$limit = $context['total_visible_posts'] <= $start + $limit ? $context['total_visible_posts'] - $start : $limit;
+			$start = $context['total_visible_posts'] <= $start + $limit ? 0 : $context['total_visible_posts'] - $start - $limit;
+		}
 ]]></add>
 		</operation>
 	</file>
@@ -33,6 +51,37 @@
 				return Display();
 			}
 			return Post();
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+			if (!empty($context['new_replies']))
+			{
+]]></search>
+			<add><![CDATA[
+			if (!empty($context['new_replies']))
+			{
+				$context['remember_new_replies'] = $context['new_replies'];
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	else
+		$context['linktree'][] = array(
+			'url' => $scripturl . '?topic=' . $topic . '.' . $_REQUEST['start'],
+			'name' => $form_subject,
+			'extra_before' => '<span' . ($settings['linktree_inline'] ? ' class="smalltext"' : '') . '><strong class="nav">' . $context['page_title'] . ' ( </strong></span>',
+			'extra_after' => '<span' . ($settings['linktree_inline'] ? ' class="smalltext"' : '') . '><strong class="nav"> )</strong></span>'
+		);
+]]></search>
+			<add><![CDATA[
+/*	else
+		$context['linktree'][] = array(
+			'url' => $scripturl . '?topic=' . $topic . '.' . $_REQUEST['start'],
+			'name' => $form_subject,
+			'extra_before' => '<span' . ($settings['linktree_inline'] ? ' class="smalltext"' : '') . '><strong class="nav">' . $context['page_title'] . ' ( </strong></span>',
+			'extra_after' => '<span' . ($settings['linktree_inline'] ? ' class="smalltext"' : '') . '><strong class="nav"> )</strong></span>'
+		);*/
 ]]></add>
 		</operation>
 		<operation>
@@ -86,6 +135,14 @@
 	if(!empty($options['view_newest_first']))
 		echo '
 				<span id="new_replies"></span>';
+]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => $scripturl . '?action=post;topic=' . $context['current_topic'] . '.' . $context['start'] . ';last_msg=' . $context['topic_last_message'], 'active' => true),
+]]></search>
+			<add><![CDATA[
+		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => '#quickreply" onclick="oQuickReply.opt.open=true;oQuickReply.swap(true);', 'active' => true),
 ]]></add>
 		</operation>
 		<operation>
@@ -229,4 +286,63 @@
 				<script type="text/javascript"><!-- // --><![CD', 'ATA[';]]></add>
 		</operation>
 	</file>
+
+	<file name="$themedir/Settings.template.php">
+		<operation>
+			<search position="replace"><![CDATA[			'label' => $txt['display_quick_reply'],
+			'options' => array(
+				0 => $txt['display_quick_reply1'],
+				1 => $txt['display_quick_reply2'],
+				2 => $txt['display_quick_reply3']
+]]></search>
+			<add><![CDATA[			'label' => $txt['display_reply'],
+			'options' => array(
+				1 => $txt['display_reply2'],
+				2 => $txt['display_reply3']
+]]></add>
+		</operation>
+	</file>
+	<file name="$themedir/Profile.template.php">
+		<operation>
+			<search position="replace"><![CDATA[									<option value="0"', empty($context['member']['options']['display_quick_reply']) ? ' selected="selected"' : '', '>', $txt['display_quick_reply1'], '</option>
+									<option value="1"', !empty($context['member']['options']['display_quick_reply']) && $context['member']['options']['display_quick_reply'] == 1 ? ' selected="selected"' : '', '>]]></search>
+			<add><![CDATA[									<option value="1"', empty($context['member']['options']['display_quick_reply']) || (!empty($context['member']['options']['display_quick_reply']) && $context['member']['options']['display_quick_reply'] == 1) ? ' selected="selected"' : '', '>]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$txt['display_quick_reply']]]></search>
+			<add><![CDATA[$txt['display_reply']]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$txt['display_quick_reply2']]]></search>
+			<add><![CDATA[$txt['display_reply2']]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$txt['display_quick_reply3']]]></search>
+			<add><![CDATA[$txt['display_reply3']]]></add>
+		</operation>
+	</file>
+	<file name="$themedir/scripts/topic.js">
+		<operation>
+			<search position="before"><![CDATA[QuickReply.prototype.swap = function ()
+{]]></search>
+			<add><![CDATA[
+	if(this.opt.open){
+		this.bCollapsed = true;
+		this.opt.open = false;
+	}
+]]></add>
+		</operation>
+	</file>
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+$txt['display_reply'] = 'Show reply on topic display:';
+$txt['display_reply2'] = 'off by default';
+$txt['display_reply3'] = 'on by default';
+]]></add>
+		</operation>
+	</file>
+
+
 </modification>

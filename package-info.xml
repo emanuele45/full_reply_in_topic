@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:full_reply_in_topic</id>
 	<name>full_reply_in_topic</name>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<type>modification</type>
 	<install for="2.0">
 		<modification>modification.xml</modification>

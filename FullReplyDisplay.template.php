@@ -30,14 +30,13 @@ function output_Editor() {
 						<span class="ie6_header floatleft"><a href="javascript:oQuickReply.swap();">
 							<img src="', $settings['images_url'], '/', $options['display_quick_reply'] == 2 ? 'collapse' : 'expand', '.gif" alt="+" id="quickReplyExpand" class="icon" />
 						</a>
-						<a href="javascript:oQuickReply.swap();">', $txt['quick_reply'], '</a>
+						<a href="javascript:oQuickReply.swap();">', $txt['reply'], '</a>
 						</span>
 					</h3>
 				</div>
 				<div id="quickReplyOptions"', $options['display_quick_reply'] == 2 ? '' : ' style="display: none"', '>
 					<span class="upperframe"><span></span></span>
 					<div class="roundframe">
-						<p class="smalltext lefttext">', $txt['quick_reply_desc'], '</p>
 						', $context['is_locked'] ? '<p class="alert smalltext">' . $txt['quick_reply_warning'] . '</p>' : '',
 						$context['oldTopicError'] ? '<p class="alert smalltext">' . sprintf($txt['error_old_topic'], $modSettings['oldTopicDays']) . '</p>' : '', '
 						', $context['can_reply_approved'] ? '' : '<em>' . $txt['wait_for_approval'] . '</em>', '
@@ -132,7 +131,7 @@ function output_Editor() {
 							</select>
 							<img src="', $context['icon_url'], '" name="icons" hspace="15" alt="" />
 						</dd>
-					</dl><hr class="clear" />';
+					</dl>';
 
 	// Are you posting a calendar event?
 	if ($context['make_event'])
@@ -811,6 +810,14 @@ function output_Editor() {
 							sItemBackgroundHover: "#e0e0f0"
 						});
 					}';
+
+	//! I feel it can be done much better... :-[
+	// Move me to the quick reply
+	if(!empty($context['post_error']))
+		echo '
+			var xpos= document.getElementById(\'quickreplybox\').offsetLeft;
+			var ypos= document.getElementById(\'quickreplybox\').offsetTop;
+			window.scrollTo(xpos,ypos);';
 	echo '
 				// ]', ']></script>';
 }
