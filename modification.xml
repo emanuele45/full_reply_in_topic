@@ -2,8 +2,8 @@
 <!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
-	<id>emanuele:full_reply_in_topic</id>
-	<version>0.1.2</version>
+	<id>emanuele:reply_in_topic_view</id>
+	<version>0.1.4</version>
 
 	<file name="$sourcedir/Display.php">
 		<operation>
@@ -14,6 +14,8 @@
 	$context['is_quick_reply_full'] = true;
 	require_once($sourcedir.'/Post.php');
 	Post();
+	// Override default settings for ex-quick reply...I'm too lazy to rewrite everything! :-P
+	$options['display_quick_reply'] = empty($options['display_quick_reply']) ? 1 : $options['display_quick_reply'];
 ]]></add>
 		</operation>
 		<operation>
@@ -139,24 +141,20 @@
 		</operation>
 		<operation>
 			<search position="replace"><![CDATA[
-		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => $scripturl . '?action=post;topic=' . $context['current_topic'] . '.' . $context['start'] . ';last_msg=' . $context['topic_last_message'], 'active' => true),
-]]></search>
+		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => $scripturl . '?action=post;topic=' . $context['current_topic'] . '.' . $context['start'] . ';last_msg=' . $context['topic_last_message']]]></search>
 			<add><![CDATA[
-		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => '#quickreply" onclick="oQuickReply.opt.open=true;oQuickReply.swap(true);', 'active' => true),
-]]></add>
+		'reply' => array('test' => 'can_reply', 'text' => 'reply', 'image' => 'reply.gif', 'lang' => true, 'url' => '#quickreply', 'custom' => 'onclick="oQuickReply.opt.open=true;oQuickReply.swap(true);"']]></add>
 		</operation>
 		<operation>
-			<search position="after"><![CDATA[
-	echo '
-				</form>
+			<search position="before"><![CDATA[<a id="lastPost"></a>';
 ]]></search>
 			<add><![CDATA[
+
 	if(empty($options['view_newest_first']))
 		echo '
 				<span id="new_replies"></span>';
 ]]></add>
 		</operation>
-
 		<operation>
 			<search position="after"><![CDATA[
 	// Show the anchor for the top and for the first message. If the first message is new, say so.
@@ -260,8 +258,6 @@
 		<br class="clear" />';
 ]]></add>
 		</operation>
-
-
 		<operation>
 			<search position="replace"><![CDATA[
 	if ($context['can_reply'] && !empty($options['display_quick_reply']))
@@ -277,13 +273,12 @@
 /*]]></add>
 		</operation>
 		<operation>
-			<search position="before"><![CDATA[
-							sItemBackgroundHover: "#e0e0f0"
-						});
-					}';]]></search>
+			<search position="after"><![CDATA[
+	if (!empty($ignoredMsgs))]]></search>
 			<add><![CDATA[*/
 	echo '
-				<script type="text/javascript"><!-- // --><![CD', 'ATA[';]]></add>
+				<script type="text/javascript"><!-- // --><![CD', 'ATA[';
+]]></add>
 		</operation>
 	</file>
 
@@ -332,7 +327,76 @@
 	}
 ]]></add>
 		</operation>
+		<operation>
+			<search position="replace"><![CDATA[
+	if (this.bCollapsed)
+	{
+		window.location.href = smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=post;quote=' + iMessageId + ';topic=' + this.opt.iTopicId + '.' + this.opt.iStart;
+		return false;
+	}
+	else
+	{
+		// Doing it the XMLhttp way?
+		if (window.XMLHttpRequest)
+		{
+			ajax_indicator(true);
+			getXMLDocument(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId + ';xml', this.onQuoteReceived);
+		}
+		// Or with a smart popup!
+		else
+			reqWin(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId, 240, 90);
+
+		// Move the view to the quick reply box.
+		if (navigator.appName == 'Microsoft Internet Explorer')
+			window.location.hash = this.opt.sJumpAnchor;
+		else
+			window.location.hash = '#' + this.opt.sJumpAnchor;
+
+		return false;
+	}
+]]></search>
+			<add><![CDATA[
+	if (this.bCollapsed)
+	{
+		this.opt.open=true;
+		this.swap(true);
+	}
+	// Doing it the XMLhttp way?
+	if (window.XMLHttpRequest)
+	{
+		ajax_indicator(true);
+		getXMLDocument(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId + ';xml', this.onQuoteReceived);
+	}
+	// Or with a smart popup!
+	else
+		reqWin(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId, 240, 90);
+
+	// Move the view to the quick reply box.
+	if (navigator.appName == 'Microsoft Internet Explorer')
+		window.location.hash = this.opt.sJumpAnchor;
+	else
+		window.location.hash = '#' + this.opt.sJumpAnchor;
+
+	return false;
+]]></add>
+		</operation>
 	</file>
+
+	<file name="$themedir/css/index.css">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[
+
+/* Styles for mod full reply in topic view.
+------------------------------------------------------- */
+#quickReplyOptions form textarea
+{
+	margin-bottom: 0;
+}
+]]></add>
+		</operation>
+	</file>
+
 	<file name="$languagedir/Modifications.english.php">
 		<operation>
 			<search position="end" />
@@ -343,6 +407,5 @@ $txt['display_reply3'] = 'on by default';
 ]]></add>
 		</operation>
 	</file>
-
 
 </modification>

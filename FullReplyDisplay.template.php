@@ -41,7 +41,7 @@ function output_Editor() {
 						$context['oldTopicError'] ? '<p class="alert smalltext">' . sprintf($txt['error_old_topic'], $modSettings['oldTopicDays']) . '</p>' : '', '
 						', $context['can_reply_approved'] ? '' : '<em>' . $txt['wait_for_approval'] . '</em>', '
 						', !$context['can_reply_approved'] && $context['require_verification'] ? '<br />' : '', '
-						<form action="', $scripturl, '?board=', $context['current_board'], ';action=post2" method="post" accept-charset="', $context['character_set'], '" name="postmodify" id="postmodify" class="flow_hidden" onsubmit="', ($context['becomes_approved'] ? '' : 'alert(\'' . $txt['js_post_will_require_approval'] . '\');'), 'submitonce(this);smc_saveEntities(\'postmodify\', [\'subject\', \'', $context['post_box_name'], '\', \'guestname\', \'evtitle\', \'question\'], \'options\');" enctype="multipart/form-data">';
+						<form action="', $scripturl, '?board=', $context['current_board'], ';action=post2#quickreply" method="post" accept-charset="', $context['character_set'], '" name="postmodify" id="postmodify" class="flow_hidden" onsubmit="', ($context['becomes_approved'] ? '' : 'alert(\'' . $txt['js_post_will_require_approval'] . '\');'), 'submitonce(this);smc_saveEntities(\'postmodify\', [\'subject\', \'', $context['post_box_name'], '\', \'guestname\', \'evtitle\', \'question\'], \'options\');" enctype="multipart/form-data">';
 		echo '
 			<input type="hidden" name="from_display" value="1" />';
 
@@ -383,7 +383,7 @@ function output_Editor() {
 		// Show more boxes only if they aren't approaching their limit.
 		if ($context['num_allowed_attachments'] > 1)
 			echo '
-							<script type="text/javascript"><!-- // --><![CD', 'ATA[
+							<script type="text/javascript"><!-- // --><![CDATA[
 								var allowed_attachments = ', $context['num_allowed_attachments'], ';
 								var current_attachment = 1;
 
@@ -398,7 +398,7 @@ function output_Editor() {
 
 									return true;
 								}
-							// ]', ']></script>
+							// ]]></script>
 						</dd>
 						<dd class="smalltext" id="moreAttachments"><a href="#" onclick="addAttachment(); return false;">(', $txt['more_attachments'], ')</a></dd>';
 
@@ -464,7 +464,7 @@ function output_Editor() {
 		</form>';
 
 	echo '
-		<script type="text/javascript"><!-- // --><![CD', 'ATA[';
+		<script type="text/javascript"><!-- // --><![CDATA[';
 
 	// The functions used to preview a posts without loading a new page.
 	echo '
@@ -698,7 +698,7 @@ function output_Editor() {
 			});';
 
 	echo '
-		// ]', ']></script>
+		// ]]></script>
 					</div>
 					<span class="lowerframe"><span></span></span>
 				</div>
@@ -711,7 +711,7 @@ function output_Editor() {
 
 	echo '
 				<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/topic.js"></script>
-				<script type="text/javascript"><!-- // --><![CD', 'ATA[';
+				<script type="text/javascript"><!-- // --><![CDATA[';
 
 	if (!empty($options['display_quick_reply']))
 		echo '
@@ -809,17 +809,8 @@ function output_Editor() {
 							sItemBackground: "transparent",
 							sItemBackgroundHover: "#e0e0f0"
 						});
-					}';
-
-	//! I feel it can be done much better... :-[
-	// Move me to the quick reply
-	if(!empty($context['post_error']))
-		echo '
-			var xpos= document.getElementById(\'quickreplybox\').offsetLeft;
-			var ypos= document.getElementById(\'quickreplybox\').offsetTop;
-			window.scrollTo(xpos,ypos);';
-	echo '
-				// ]', ']></script>';
+					}
+				// ]]></script>';
 }
 
 ?>
