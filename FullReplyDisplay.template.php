@@ -114,7 +114,7 @@ function output_Editor() {
 							<span', isset($context['post_error']['no_subject']) ? ' class="error"' : '', ' id="caption_subject">', $txt['subject'], ':</span>
 						</dt>
 						<dd>
-							<input type="text" name="subject"', $context['subject'] == '' ? '' : ' value="' . $context['subject'] . '"', ' tabindex="', $context['tabindex']++, '" size="80" maxlength="80" class="input_text" />
+							<input type="text" name="subject"', $context['subject'] == '' ? '' : ' value="' . (!empty($context['response_prefix']) ? $context['response_prefix'] . ' ' : '') . $context['subject'] . '"', ' tabindex="', $context['tabindex']++, '" size="80" maxlength="80" class="input_text" />
 						</dd>
 						<dt class="clear_left">
 							', $txt['message_icon'], ':
