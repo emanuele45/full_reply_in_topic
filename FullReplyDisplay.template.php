@@ -3,8 +3,10 @@
 function output_Editor() {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
-	// If the user wants to see how their message looks - the preview section is where it's at!
-	echo '
+	if ($context['can_reply'] && !empty($options['display_quick_reply']) && empty($options['view_newest_first']))
+	{
+		// If the user wants to see how their message looks - the preview section is where it's at!
+		echo '
 			<div id="preview_section"', isset($context['preview_message']) ? '' : ' style="display: none;"', '>
 				<div class="cat_bar">
 					<h3 class="catbg">
@@ -45,17 +47,17 @@ function output_Editor() {
 		echo '
 			<input type="hidden" name="from_display" value="1" />';
 
-	if ($context['make_event'] && (!$context['event']['new'] || !empty($context['current_board'])))
-		echo '
+		if ($context['make_event'] && (!$context['event']['new'] || !empty($context['current_board'])))
+			echo '
 			<input type="hidden" name="eventid" value="', $context['event']['id'], '" />';
 
-	// Start the main table.
-	if(isset($context['current_topic']))
-		echo '
+		// Start the main table.
+		if(isset($context['current_topic']))
+			echo '
 					<input type="hidden" name="topic" value="' . $context['current_topic'] . '" />';
 
-	// If an error occurred, explain what happened.
-	echo '
+		// If an error occurred, explain what happened.
+		echo '
 					<div class="errorbox"', empty($context['post_error']['messages']) ? ' style="display: none"' : '', ' id="errors">
 						<dl>
 							<dt>
@@ -67,30 +69,30 @@ function output_Editor() {
 						</dl>
 					</div>';
 
-	// If this won't be approved let them know!
-	if (!$context['becomes_approved'])
-	{
-		echo '
+		// If this won't be approved let them know!
+		if (!$context['becomes_approved'])
+		{
+			echo '
 					<p class="information">
 						<em>', $txt['wait_for_approval'], '</em>
 						<input type="hidden" name="not_approved" value="1" />
 					</p>';
-	}
+		}
 
-	// If it's locked, show a message to warn the replyer.
-	echo '
+		// If it's locked, show a message to warn the replyer.
+		echo '
 					<p class="information"', $context['locked'] ? '' : ' style="display: none"', ' id="lock_warning">
 						', $txt['topic_locked_no_reply'], '
 					</p>';
 
-	// The post header... important stuff
-	echo '
+		// The post header... important stuff
+		echo '
 					<dl id="post_header">';
 
-	// Guests have to put in their name and email...
-	if (!empty($context['is_guest']) && isset($context['name']) && isset($context['email']))
-	{
-		echo '
+		// Guests have to put in their name and email...
+		if (!empty($context['is_guest']) && isset($context['name']) && isset($context['email']))
+		{
+			echo '
 						<dt>
 							<span', isset($context['post_error']['long_name']) || isset($context['post_error']['no_name']) || isset($context['post_error']['bad_name']) ? ' class="error"' : '', ' id="caption_guestname">', $txt['name'], ':</span>
 						</dt>
@@ -98,18 +100,18 @@ function output_Editor() {
 							<input type="text" name="guestname" size="25" value="', $context['name'], '" tabindex="', $context['tabindex']++, '" class="input_text" />
 						</dd>';
 
-		if (empty($modSettings['guest_post_no_email']))
-			echo '
+			if (empty($modSettings['guest_post_no_email']))
+				echo '
 						<dt>
 							<span', isset($context['post_error']['no_email']) || isset($context['post_error']['bad_email']) ? ' class="error"' : '', ' id="caption_email">', $txt['email'], ':</span>
 						</dt>
 						<dd>
 							<input type="text" name="email" size="25" value="', $context['email'], '" tabindex="', $context['tabindex']++, '" class="input_text" />
 						</dd>';
-	}
+		}
 
-	// Now show the subject box for this post.
-	echo '
+		// Now show the subject box for this post.
+		echo '
 						<dt>
 							<span', isset($context['post_error']['no_subject']) ? ' class="error"' : '', ' id="caption_subject">', $txt['subject'], ':</span>
 						</dt>
@@ -122,21 +124,21 @@ function output_Editor() {
 						<dd>
 							<select name="icon" id="icon" onchange="showimage()">';
 
-	// Loop through each message icon allowed, adding it to the drop down list.
-	foreach ($context['icons'] as $icon)
-		echo '
+		// Loop through each message icon allowed, adding it to the drop down list.
+		foreach ($context['icons'] as $icon)
+			echo '
 								<option value="', $icon['value'], '"', $icon['value'] == $context['icon'] ? ' selected="selected"' : '', '>', $icon['name'], '</option>';
 
-	echo '
+		echo '
 							</select>
 							<img src="', $context['icon_url'], '" name="icons" hspace="15" alt="" />
 						</dd>
 					</dl>';
 
-	// Are you posting a calendar event?
-	if ($context['make_event'])
-	{
-		echo '
+		// Are you posting a calendar event?
+		if ($context['make_event'])
+		{
+			echo '
 					<div id="post_event">
 						<fieldset id="event_main">
 							<legend><span', isset($context['post_error']['no_event']) ? ' class="error"' : '', ' id="caption_evtitle">', $txt['calendar_event_title'], '</span></legend>
@@ -145,114 +147,114 @@ function output_Editor() {
 								<input type="hidden" name="calendar" value="1" />', $txt['calendar_year'], '
 								<select name="year" id="year" tabindex="', $context['tabindex']++, '" onchange="generateDays();">';
 
-		// Show a list of all the years we allow...
-		for ($year = $modSettings['cal_minyear']; $year <= $modSettings['cal_maxyear']; $year++)
-			echo '
+			// Show a list of all the years we allow...
+			for ($year = $modSettings['cal_minyear']; $year <= $modSettings['cal_maxyear']; $year++)
+				echo '
 									<option value="', $year, '"', $year == $context['event']['year'] ? ' selected="selected"' : '', '>', $year, '&nbsp;</option>';
 
-		echo '
+			echo '
 								</select>
 								', $txt['calendar_month'], '
 								<select name="month" id="month" onchange="generateDays();">';
 
-		// There are 12 months per year - ensure that they all get listed.
-		for ($month = 1; $month <= 12; $month++)
-			echo '
+			// There are 12 months per year - ensure that they all get listed.
+			for ($month = 1; $month <= 12; $month++)
+				echo '
 									<option value="', $month, '"', $month == $context['event']['month'] ? ' selected="selected"' : '', '>', $txt['months'][$month], '&nbsp;</option>';
 
-		echo '
+			echo '
 								</select>
 								', $txt['calendar_day'], '
 								<select name="day" id="day">';
 
-		// This prints out all the days in the current month - this changes dynamically as we switch months.
-		for ($day = 1; $day <= $context['event']['last_day']; $day++)
-			echo '
+			// This prints out all the days in the current month - this changes dynamically as we switch months.
+			for ($day = 1; $day <= $context['event']['last_day']; $day++)
+				echo '
 									<option value="', $day, '"', $day == $context['event']['day'] ? ' selected="selected"' : '', '>', $day, '&nbsp;</option>';
 
-		echo '
+			echo '
 								</select>
 							</div>
 						</fieldset>';
 
-		if (!empty($modSettings['cal_allowspan']) || ($context['event']['new'] && $context['is_new_post']))
-		{
-			echo '
+			if (!empty($modSettings['cal_allowspan']) || ($context['event']['new'] && $context['is_new_post']))
+			{
+				echo '
 						<fieldset id="event_options">
 							<legend>', $txt['calendar_event_options'], '</legend>
 							<div class="event_options smalltext">
 								<ul class="event_options">';
 
-			// If events can span more than one day then allow the user to select how long it should last.
-			if (!empty($modSettings['cal_allowspan']))
-			{
-				echo '
+				// If events can span more than one day then allow the user to select how long it should last.
+				if (!empty($modSettings['cal_allowspan']))
+				{
+					echo '
 									<li>
 										', $txt['calendar_numb_days'], '
 										<select name="span">';
 
-				for ($days = 1; $days <= $modSettings['cal_maxspan']; $days++)
-					echo '
+					for ($days = 1; $days <= $modSettings['cal_maxspan']; $days++)
+						echo '
 											<option value="', $days, '"', $days == $context['event']['span'] ? ' selected="selected"' : '', '>', $days, '&nbsp;</option>';
 
-				echo '
+					echo '
 										</select>
 									</li>';
-			}
+				}
 
-			// If this is a new event let the user specify which board they want the linked post to be put into.
-			if ($context['event']['new'] && $context['is_new_post'])
-			{
-				echo '
+				// If this is a new event let the user specify which board they want the linked post to be put into.
+				if ($context['event']['new'] && $context['is_new_post'])
+				{
+					echo '
 									<li>
 										', $txt['calendar_post_in'], '
 										<select name="board">';
-				foreach ($context['event']['categories'] as $category)
-				{
-					echo '
-											<optgroup label="', $category['name'], '">';
-					foreach ($category['boards'] as $board)
+					foreach ($context['event']['categories'] as $category)
+					{
 						echo '
+											<optgroup label="', $category['name'], '">';
+						foreach ($category['boards'] as $board)
+							echo '
 												<option value="', $board['id'], '"', $board['selected'] ? ' selected="selected"' : '', '>', $board['child_level'] > 0 ? str_repeat('==', $board['child_level'] - 1) . '=&gt;' : '', ' ', $board['name'], '&nbsp;</option>';
-					echo '
+						echo '
 											</optgroup>';
-				}
-				echo '
+					}
+					echo '
 										</select>
 									</li>';
-			}
+				}
 
-			echo '
+				echo '
 								</ul>
 							</div>
 						</fieldset>';
+			}
+
+			echo '
+					</div>';
 		}
 
-		echo '
-					</div>';
-	}
-
-	// If this is a poll then display all the poll options!
-	if ($context['make_poll'])
-	{
-		echo '
+		// If this is a poll then display all the poll options!
+		if ($context['make_poll'])
+		{
+			echo '
 					<div id="edit_poll">
 						<fieldset id="poll_main">
 							<legend><span ', (isset($context['poll_error']['no_question']) ? ' class="error"' : ''), '>', $txt['poll_question'], '</span></legend>
 							<input type="text" name="question" value="', isset($context['question']) ? $context['question'] : '', '" tabindex="', $context['tabindex']++, '" size="80" class="input_text" />
 							<ul class="poll_main">';
 
-		// Loop through all the choices and print them out.
-		foreach ($context['choices'] as $choice)
-		{
-			echo '
+			// Loop through all the choices and print them out.
+			foreach ($context['choices'] as $choice)
+			{
+				echo '
 								<li>
 									<label for="options-', $choice['id'], '">', $txt['option'], ' ', $choice['number'], '</label>:
 									<input type="text" name="options[', $choice['id'], ']" id="options-', $choice['id'], '" value="', $choice['label'], '" tabindex="', $context['tabindex']++, '" size="80" maxlength="255" class="input_text" />
 								</li>';
-		}
+			}
 
-		echo '
+			echo '
 								<li id="pollMoreOptions"></li>
 							</ul>
 							<strong><a href="javascript:addPollOption(); void(0);">(', $txt['poll_add_option'], ')</a></strong>
@@ -280,8 +282,8 @@ function output_Editor() {
 									<input type="checkbox" id="poll_change_vote" name="poll_change_vote"', !empty($context['poll']['change_vote']) ? ' checked="checked"' : '', ' class="input_check" />
 								</dd>';
 
-		if ($context['poll_options']['guest_vote_enabled'])
-			echo '
+			if ($context['poll_options']['guest_vote_enabled'])
+				echo '
 								<dt>
 									<label for="poll_guest_vote">', $txt['poll_guest_vote'], ':</label>
 								</dt>
@@ -289,7 +291,7 @@ function output_Editor() {
 									<input type="checkbox" id="poll_guest_vote" name="poll_guest_vote"', !empty($context['poll_options']['guest_vote']) ? ' checked="checked"' : '', ' class="input_check" />
 								</dd>';
 
-		echo '
+			echo '
 								<dt>
 									', $txt['poll_results_visibility'], ':
 								</dt>
@@ -301,40 +303,40 @@ function output_Editor() {
 							</dl>
 						</fieldset>
 					</div>';
-	}
+		}
 
-	// Show the actual posting area...
-	if ($context['show_bbc'])
-	{
-		echo '
+		// Show the actual posting area...
+		if ($context['show_bbc'])
+		{
+			echo '
 					<div id="bbcBox_message"></div>';
-	}
+		}
 
-	// What about smileys?
-	if (!empty($context['smileys']['postform']) || !empty($context['smileys']['popup']))
-		echo '
+		// What about smileys?
+		if (!empty($context['smileys']['postform']) || !empty($context['smileys']['popup']))
+			echo '
 					<div id="smileyBox_message"></div>';
 
-	echo '
+		echo '
 					', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
-	// If this message has been edited in the past - display when it was.
-	if (isset($context['last_modified']))
-		echo '
+		// If this message has been edited in the past - display when it was.
+		if (isset($context['last_modified']))
+			echo '
 					<div class="padding smalltext">
 						<strong>', $txt['last_edit'], ':</strong>
 						', $context['last_modified'], '
 					</div>';
 
-	// If the admin has enabled the hiding of the additional options - show a link and image for it.
-	if (!empty($settings['additional_options_collapsable']))
-		echo '
+		// If the admin has enabled the hiding of the additional options - show a link and image for it.
+		if (!empty($settings['additional_options_collapsable']))
+			echo '
 					<div id="postAdditionalOptionsHeader">
 						<img src="', $settings['images_url'], '/collapse.gif" alt="-" id="postMoreExpand" style="display: none;" /> <strong><a href="#" id="postMoreExpandLink">', $txt['post_additionalopt'], '</a></strong>
 					</div>';
 
-	// Display the check boxes for all the standard options - if they are available to the user!
-	echo '
+		// Display the check boxes for all the standard options - if they are available to the user!
+		echo '
 					<div id="postMoreOptions" class="smalltext">
 						<ul class="post_options">
 							', $context['can_notify'] ? '<li><input type="hidden" name="notify" value="0" /><label for="check_notify"><input type="checkbox" name="notify" id="check_notify"' . ($context['notify'] || !empty($options['auto_notify']) ? ' checked="checked"' : '') . ' value="1" class="input_check" /> ' . $txt['notify_replies'] . '</label></li>' : '', '
@@ -348,10 +350,10 @@ function output_Editor() {
 						</ul>
 					</div>';
 
-	// If this post already has attachments on it - give information about them.
-	if (!empty($context['current_attachments']))
-	{
-		echo '
+		// If this post already has attachments on it - give information about them.
+		if (!empty($context['current_attachments']))
+		{
+			echo '
 					<dl id="postAttachment">
 						<dt>
 							', $txt['attached'], ':
@@ -360,19 +362,19 @@ function output_Editor() {
 							<input type="hidden" name="attach_del[]" value="0" />
 							', $txt['uncheck_unwatchd_attach'], ':
 						</dd>';
-		foreach ($context['current_attachments'] as $attachment)
-			echo '
+			foreach ($context['current_attachments'] as $attachment)
+				echo '
 						<dd class="smalltext">
 							<label for="attachment_', $attachment['id'], '"><input type="checkbox" id="attachment_', $attachment['id'], '" name="attach_del[]" value="', $attachment['id'], '"', empty($attachment['unchecked']) ? ' checked="checked"' : '', ' class="input_check" /> ', $attachment['name'], (empty($attachment['approved']) ? ' (' . $txt['awaiting_approval'] . ')' : ''), '</label>
 						</dd>';
-		echo '
+			echo '
 					</dl>';
-	}
+		}
 
-	// Is the user allowed to post any additional ones? If so give them the boxes to do it!
-	if ($context['can_post_attachment'])
-	{
-		echo '
+		// Is the user allowed to post any additional ones? If so give them the boxes to do it!
+		if ($context['can_post_attachment'])
+		{
+			echo '
 					<dl id="postAttachment2">
 						<dt>
 							', $txt['attach'], ':
@@ -380,9 +382,9 @@ function output_Editor() {
 						<dd class="smalltext">
 							<input type="file" size="60" name="attachment[]" id="attachment1" class="input_file" /> (<a href="javascript:void(0);" onclick="cleanFileInput(\'attachment1\');">', $txt['clean_attach'], '</a>)';
 
-		// Show more boxes only if they aren't approaching their limit.
-		if ($context['num_allowed_attachments'] > 1)
-			echo '
+			// Show more boxes only if they aren't approaching their limit.
+			if ($context['num_allowed_attachments'] > 1)
+				echo '
 							<script type="text/javascript"><!-- // --><![CDATA[
 								var allowed_attachments = ', $context['num_allowed_attachments'], ';
 								var current_attachment = 1;
@@ -402,72 +404,72 @@ function output_Editor() {
 						</dd>
 						<dd class="smalltext" id="moreAttachments"><a href="#" onclick="addAttachment(); return false;">(', $txt['more_attachments'], ')</a></dd>';
 
-		echo '
+			echo '
 						<dd class="smalltext">';
 
-		// Show some useful information such as allowed extensions, maximum size and amount of attachments allowed.
-		if (!empty($modSettings['attachmentCheckExtensions']))
-			echo '
+			// Show some useful information such as allowed extensions, maximum size and amount of attachments allowed.
+			if (!empty($modSettings['attachmentCheckExtensions']))
+				echo '
 							', $txt['allowed_types'], ': ', $context['allowed_extensions'], '<br />';
 
-		if (!empty($context['attachment_restrictions']))
-			echo '
+			if (!empty($context['attachment_restrictions']))
+				echo '
 							', $txt['attach_restrictions'], ' ', implode(', ', $context['attachment_restrictions']), '<br />';
 
-		if (!$context['can_post_attachment_unapproved'])
-			echo '
+			if (!$context['can_post_attachment_unapproved'])
+				echo '
 							<span class="alert">', $txt['attachment_requires_approval'], '</span>', '<br />';
 
-		echo '
+			echo '
 						</dd>
 					</dl>';
-	}
+		}
 
-	// Is visual verification enabled?
-	if ($context['require_verification'])
-	{
-		echo '
+		// Is visual verification enabled?
+		if ($context['require_verification'])
+		{
+			echo '
 					<div class="post_verification">
 						<span', !empty($context['post_error']['need_qr_verification']) ? ' class="error"' : '', '>
 							<strong>', $txt['verification'], ':</strong>
 						</span>
 						', template_control_verification($context['visual_verification_id'], 'all'), '
 					</div>';
-	}
+		}
 
-	// Finally, the submit buttons.
-	echo '
+		// Finally, the submit buttons.
+		echo '
 					<p class="smalltext" id="shortcuts">
 						', $context['browser']['is_firefox'] ? $txt['shortcuts_firefox'] : $txt['shortcuts'], '
 					</p>
 					<p id="post_confirm_buttons" class="righttext">
 						', template_control_richedit_buttons($context['post_box_name']);
 
-	// Option to delete an event if user is editing one.
-	if ($context['make_event'] && !$context['event']['new'])
-		echo '
+		// Option to delete an event if user is editing one.
+		if ($context['make_event'] && !$context['event']['new'])
+			echo '
 						<input type="submit" name="deleteevent" value="', $txt['event_delete'], '" onclick="return confirm(\'', $txt['event_delete_confirm'], '\');" class="button_submit" />';
 
-	echo '
+		echo '
 					</p>
 			<br class="clear" />';
 
-	// Assuming this isn't a new topic pass across the last message id.
-	if (isset($context['topic_last_message']))
-		echo '
+		// Assuming this isn't a new topic pass across the last message id.
+		if (isset($context['topic_last_message']))
+			echo '
 			<input type="hidden" name="last_msg" value="', $context['topic_last_message'], '" />';
 
-	echo '
+		echo '
 			<input type="hidden" name="additional_options" id="additional_options" value="', $context['show_additional_options'] ? '1' : '0', '" />
 			<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 			<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '" />
 		</form>';
 
-	echo '
+		echo '
 		<script type="text/javascript"><!-- // --><![CDATA[';
 
-	// The functions used to preview a posts without loading a new page.
-	echo '
+		// The functions used to preview a posts without loading a new page.
+		echo '
 			var current_board = ', empty($context['current_board']) ? 'null' : $context['current_board'], ';
 			var make_poll = ', $context['make_poll'] ? 'true' : 'false', ';
 			var txt_preview_title = "', $txt['preview_title'], '";
@@ -476,14 +478,14 @@ function output_Editor() {
 			var reply_counter = ', empty($counter) ? 0 : $counter, ';
 			function previewPost()
 			{';
-	if ($context['browser']['is_firefox'])
-		echo '
+		if ($context['browser']['is_firefox'])
+			echo '
 				// Firefox doesn\'t render <marquee> that have been put it using javascript
 				if (document.forms.postmodify.elements[', JavaScriptEscape($context['post_box_name']), '].value.indexOf(\'[move]\') != -1)
 				{
 					return submitThisOnce(document.forms.postmodify);
 				}';
-	echo '
+		echo '
 				if (window.XMLHttpRequest)
 				{
 					// Opera didn\'t support setRequestHeader() before 8.01.
@@ -596,14 +598,14 @@ function output_Editor() {
 				var numNewPosts = newPosts.length;
 				if (numNewPosts != 0)
 				{';
-	if(!empty($options['view_newest_first']))
-		echo '
+		if(!empty($options['view_newest_first']))
+			echo '
 					newPostsHTML = \'<span id="new_replies"><\' + \'/span>\';';
-	else
-		echo '
+		else
+			echo '
 					var newPostsHTML = \'\';';
 
-	echo '
+		echo '
 					for (var i = 0; i < numNewPosts; i++)
 					{
 						new_replies[new_replies.length] = newPosts[i].getAttribute("id");
@@ -614,11 +616,11 @@ function output_Editor() {
 
 						newPostsHTML += \'<div class="windowbg\' + (++reply_counter % 2 == 0 ? ', !empty($alternate) ? '\'\' : \'2\'' : '\'2\' : \'\'', ') + \' core_posts"><span class="topslice"><span></span></span><div class="content" id="msg\' + newPosts[i].getAttribute("id") + \'"><div class="floatleft"><h5>', $txt['posted_by'], ': \' + newPosts[i].getElementsByTagName("poster")[0].firstChild.nodeValue + \'</h5><span class="smalltext">&#171;&nbsp;<strong>', $txt['on'], ':</strong> \' + newPosts[i].getElementsByTagName("time")[0].firstChild.nodeValue + \'&nbsp;&#187;</span> <img src="\' + smf_images_url + \'/', $context['user']['language'], '/new.gif" alt="', $txt['preview_new'], '" id="image_new_\' + newPosts[i].getAttribute("id") + \'" /></div>\';';
 
-	if ($context['can_quote'])
-		echo '
+		if ($context['can_quote'])
+			echo '
 						newPostsHTML += \'<ul class="reset smalltext quickbuttons" id="msg_\' + newPosts[i].getAttribute("id") + \'_quote"><li class="quote_button"><a href="#postmodify" onclick="return oQuickReply.quote(\\\'\' + newPosts[i].getAttribute("id") + \'\\\');"><span>',$txt['quote'],'</span><\' + \'/a></li></ul>\';';
 
-	echo '
+		echo '
 						newPostsHTML += \'<br class="clear" />\';
 
 						if (ignoring)
@@ -626,11 +628,11 @@ function output_Editor() {
 
 						newPostsHTML += \'<div class="list_posts smalltext" id="msg_\' + newPosts[i].getAttribute("id") + \'_body">\' + newPosts[i].getElementsByTagName("message")[0].firstChild.nodeValue + \'<\' + \'/div></div><span class="botslice"><span></span></span></div>\';
 					}';
-	if(empty($options['view_newest_first']))
-		echo '
+		if(empty($options['view_newest_first']))
+			echo '
 					newPostsHTML += \'<span id="new_replies"><\' + \'/span>\';';
 
-	echo '
+		echo '
 					setOuterHTML(document.getElementById(\'new_replies\'), newPostsHTML);
 				}
 
@@ -661,9 +663,9 @@ function output_Editor() {
 					smf_codeFix();
 			}';
 
-	// Code for showing and hiding additional options.
-	if (!empty($settings['additional_options_collapsable']))
-		echo '
+		// Code for showing and hiding additional options.
+		if (!empty($settings['additional_options_collapsable']))
+			echo '
 			var oSwapAdditionalOptions = new smc_Toggle({
 				bToggleEnabled: true,
 				bCurrentlyCollapsed: ', $context['show_additional_options'] ? 'false' : 'true', ',
@@ -697,17 +699,18 @@ function output_Editor() {
 				]
 			});';
 
-	echo '
+		echo '
 		// ]]></script>
 					</div>
 					<span class="lowerframe"><span></span></span>
 				</div>
 			</div>';
 
-	if ($context['show_spellchecking'])
-		echo '
+		if ($context['show_spellchecking'])
+			echo '
 			<form action="', $scripturl, '?action=spellcheck" method="post" accept-charset="', $context['character_set'], '" name="spell_form" id="spell_form" target="spellWindow"><input type="hidden" name="spellstring" value="" /></form>
 				<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/spellcheck.js"></script>';
+	}
 
 	echo '
 				<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/topic.js"></script>

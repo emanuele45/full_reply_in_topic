@@ -11,9 +11,11 @@
 		loadTemplate('Display');]]></search>
 			<add><![CDATA[
 
-	$context['is_quick_reply_full'] = true;
-	require_once($sourcedir.'/Post.php');
-	Post();
+	if(allowedTo(array('post_reply_any', 'post_reply_own', 'post_unapproved_replies_any', 'post_unapproved_replies_own'), $board)) {
+		$context['is_quick_reply_full'] = true;
+		require_once($sourcedir.'/Post.php');
+		Post();
+	}
 	// Override default settings for ex-quick reply...I'm too lazy to rewrite everything! :-P
 	$options['display_quick_reply'] = empty($options['display_quick_reply']) ? 1 : $options['display_quick_reply'];
 ]]></add>
@@ -249,11 +251,9 @@
 	// End of the javascript, start the form and display the link tree.
 	echo '
 		// ]', ']></script>';
-	if ($context['can_reply'] && !empty($options['display_quick_reply']) && !empty($options['view_newest_first']))
-	{
-		output_Editor();
-	}
-	else
+
+	output_Editor();
+	if (!($context['can_reply'] && !empty($options['display_quick_reply']) && !empty($options['view_newest_first'])))
 		echo '
 		<br class="clear" />';
 ]]></add>
@@ -263,11 +263,8 @@
 	if ($context['can_reply'] && !empty($options['display_quick_reply']))
 	{]]></search>
 			<add><![CDATA[
-	if ($context['can_reply'] && !empty($options['display_quick_reply']) && empty($options['view_newest_first']))
-	{
-		output_Editor();
-	}
-	else
+	output_Editor();
+	if (!($context['can_reply'] && !empty($options['display_quick_reply']) && empty($options['view_newest_first'])))
 		echo '
 		<br class="clear" />';
 /*]]></add>

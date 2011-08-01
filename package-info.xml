@@ -3,7 +3,7 @@
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
 	<id>emanuele:reply_in_topic_view</id>
 	<name>Reply in topic view</name>
-	<version>0.1.4</version>
+	<version>0.1.5</version>
 	<type>modification</type>
 	<install for="2.0">
 		<modification>modification.xml</modification>
