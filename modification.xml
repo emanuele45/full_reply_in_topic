@@ -11,6 +11,7 @@
 		loadTemplate('Display');]]></search>
 			<add><![CDATA[
 
+	loadTemplate('FullReplyDisplay');
 	if(allowedTo(array('post_reply_any', 'post_reply_own', 'post_unapproved_replies_any', 'post_unapproved_replies_own'), $board)) {
 		$context['is_quick_reply_full'] = true;
 		require_once($sourcedir.'/Post.php');

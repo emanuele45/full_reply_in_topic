@@ -7,12 +7,10 @@
 	<type>modification</type>
 	<install for="2.0">
 		<modification>modification.xml</modification>
-		<database>install.php</database>
 		<require-file name="FullReplyDisplay.template.php" destination="$themedir" />
 	</install>
 	<uninstall for="2.0">
 		<modification reverse="true">modification.xml</modification>
-		<database reverse="true">install.php</database>
 		<remove-file name="$themedir/FullReplyDisplay.template.php" />
 	</uninstall>
 </package-info>
