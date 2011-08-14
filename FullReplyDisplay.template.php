@@ -1,9 +1,11 @@
 <?php
 
-function output_Editor() {
+function output_Editor($position = 'bottom') {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
-	if ($context['can_reply'] && !empty($options['display_quick_reply']) && empty($options['view_newest_first']))
+	$show_in_pos = empty($options['view_newest_first']) ? 'bottom' : 'top';
+
+	if ($context['can_reply'] && !empty($options['display_quick_reply']) && ($position == $show_in_pos))
 	{
 		// If the user wants to see how their message looks - the preview section is where it's at!
 		echo '
@@ -711,13 +713,17 @@ function output_Editor() {
 			<form action="', $scripturl, '?action=spellcheck" method="post" accept-charset="', $context['character_set'], '" name="spell_form" id="spell_form" target="spellWindow"><input type="hidden" name="spellstring" value="" /></form>
 				<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/spellcheck.js"></script>';
 	}
+	else
+		echo '
+		<br class="clear" />';
 
-	echo '
+	if($position == 'bottom'){
+		echo '
 				<script type="text/javascript" src="' . $settings['default_theme_url'] . '/scripts/topic.js"></script>
 				<script type="text/javascript"><!-- // --><![CDATA[';
 
-	if (!empty($options['display_quick_reply']))
-		echo '
+		if (!empty($options['display_quick_reply']))
+			echo '
 					var oQuickReply = new QuickReply({
 						bDefaultCollapsed: ', !empty($options['display_quick_reply']) && $options['display_quick_reply'] == 2 ? 'false' : 'true', ',
 						iTopicId: ', $context['current_topic'], ',
@@ -731,8 +737,8 @@ function output_Editor() {
 						sJumpAnchor: "quickreply"
 					});';
 
-	if (!empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $context['can_remove_post'])
-		echo '
+		if (!empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $context['can_remove_post'])
+			echo '
 					var oInTopicModeration = new InTopicModeration({
 						sSelf: \'oInTopicModeration\',
 						sCheckboxContainerMask: \'in_topic_mod_check_\',
@@ -753,7 +759,7 @@ function output_Editor() {
 						sFormId: \'quickModForm\'
 					});';
 
-	echo '
+		echo '
 					if (\'XMLHttpRequest\' in window)
 					{
 						var oQuickModify = new QuickModify({
@@ -814,6 +820,7 @@ function output_Editor() {
 						});
 					}
 				// ]]></script>';
+	}
 }
 
 ?>

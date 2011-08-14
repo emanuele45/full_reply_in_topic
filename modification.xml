@@ -3,7 +3,7 @@
 <modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
 
 	<id>emanuele:reply_in_topic_view</id>
-	<version>0.1.5</version>
+	<version>0.1.6</version>
 
 	<file name="$sourcedir/Display.php">
 		<operation>
@@ -252,10 +252,7 @@
 	echo '
 		// ]', ']></script>';
 
-	output_Editor();
-	if (!($context['can_reply'] && !empty($options['display_quick_reply']) && !empty($options['view_newest_first'])))
-		echo '
-		<br class="clear" />';
+	output_Editor('top');
 ]]></add>
 		</operation>
 		<operation>
@@ -264,9 +261,7 @@
 	{]]></search>
 			<add><![CDATA[
 	output_Editor();
-	if (!($context['can_reply'] && !empty($options['display_quick_reply']) && empty($options['view_newest_first'])))
-		echo '
-		<br class="clear" />';
+
 /*]]></add>
 		</operation>
 		<operation>
