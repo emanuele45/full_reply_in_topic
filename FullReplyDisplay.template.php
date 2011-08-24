@@ -1,6 +1,6 @@
 <?php
 
-function output_Editor($position = 'bottom') {
+function output_Editor($position = 'bottom', $removableMessageIDs = 0, $alternate = 0) {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
 	$show_in_pos = empty($options['view_newest_first']) ? 'bottom' : 'top';

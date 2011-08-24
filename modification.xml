@@ -261,7 +261,7 @@
 	if ($context['can_reply'] && !empty($options['display_quick_reply']))
 	{]]></search>
 			<add><![CDATA[
-	output_Editor();
+	output_Editor('bottom', $removableMessageIDs, $alternate);
 
 /*]]></add>
 		</operation>
