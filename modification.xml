@@ -14,11 +14,12 @@
 	loadTemplate('FullReplyDisplay');
 	if(allowedTo(array('post_reply_any', 'post_reply_own', 'post_unapproved_replies_any', 'post_unapproved_replies_own'), $board)) {
 		$context['is_quick_reply_full'] = true;
+		$context['is_guest'] = $user_info['is_guest'];
 		require_once($sourcedir.'/Post.php');
 		Post();
 	}
 	// Override default settings for ex-quick reply...I'm too lazy to rewrite everything! :-P
-	$options['display_quick_reply'] = empty($options['display_quick_reply']) ? 1 : $options['display_quick_reply'];
+	$options['display_quick_reply'] = empty($context['post_error']) ? (empty($options['display_quick_reply']) ? 1 : $options['display_quick_reply']) : 2;
 ]]></add>
 		</operation>
 		<operation>
