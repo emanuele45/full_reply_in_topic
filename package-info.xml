@@ -5,11 +5,11 @@
 	<name>Reply in topic view</name>
 	<version>0.1.6</version>
 	<type>modification</type>
-	<install for="2.0">
+	<install for="2.0 - 2.0.99">
 		<modification>modification.xml</modification>
 		<require-file name="FullReplyDisplay.template.php" destination="$themedir" />
 	</install>
-	<uninstall for="2.0">
+	<uninstall for="2.0 - 2.0.99">
 		<modification reverse="true">modification.xml</modification>
 		<remove-file name="$themedir/FullReplyDisplay.template.php" />
 	</uninstall>
